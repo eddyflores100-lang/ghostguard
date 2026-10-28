@@ -28,7 +28,7 @@ Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its depen
 ## Remaining before submission
 
 - Integrate an actual agent and isolate it so it cannot bypass a process-separated gateway or access action credentials. Provide authenticated human-only approvals and expiration.
-- Repeat the combined real Gemma and Alethech flow on one machine and document dependency licenses.
+- Document dependency licenses and reproduce the combined Gemma and Alethech flow on other systems.
 - Create a review UI and demo video or hosted build; prepare the English DEV post and cite prior work. Hosted services need internet.
 
 ## Credits
@@ -37,8 +37,10 @@ GhostGuard is a new project. [Alethech](https://github.com/eddyflores100-lang/al
 
 ## Model-generated proposal (experimental)
 
-Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-store /private/path/store` after starting Ollama and installing the model and Alethech. The worker sends a fictional phishing scenario to localhost and asks the model for a JSON proposal. The guardian validates its tool, fields and fictional recipient, then pauses for terminal review; the effect is simulated. Invalid output fails closed. Automated tests use a mock Ollama endpoint. A real model run on 2026-10-28 generated a valid proposal, produced advisory text, and recorded a human-denial path; no email was sent. This is a minimal model-driven example, not a general agent framework or operating-system sandbox.
+Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-store /private/path/store` after starting Ollama and installing the model and Alethech. The worker sends a fictional phishing scenario to localhost and asks the model for a JSON proposal. The guardian validates its tool, fields and fictional recipient, then pauses for terminal review; the effect is simulated. Invalid output fails closed. Automated tests use a mock Ollama endpoint. A real model run on 2026-10-28 generated a valid proposal, produced advisory text, and recorded a denial path with an automated test response; no email was sent. This is a minimal model-driven example, not a general agent framework or operating-system sandbox.
 
 ## Diagnostic logs
 
 `agent_demo.py` writes one JSON object per line to `~/.ghostguard/events.jsonl` by default. Set a different path with `--log-file PATH`. Events report UTC timestamps, a random session identifier, stages, bounded durations, decision and sanitized error type. Message bodies, recipients, model responses, approval tokens and arbitrary exception messages are not written. Logs are local diagnostics: they are not signed, encrypted, automatically rotated, or an authoritative audit trail. File creation requests owner-only Unix permissions; Windows access follows the directory's ACLs. Protect the directory, delete or rotate logs as needed, and use the separately configured Alethech store for signed evidence. A log write failure stops the demo rather than silently losing diagnostics.
+
+## Combined real-model and evidence check (2026-10-28)\n\nOn Windows, Python 3.11 in an isolated virtual environment, Ollama 0.40.11 with gemma3:1b, and Alethech 0.9.5 were used together. The model generated a valid fictional proposal, the guard paused it, Gemma provided advisory text, the test supplied a rejection, and Alethech verified the signed store. The test did not send email or verify an authenticated user interface. Model advice is not authoritative and cannot grant approval.\n
