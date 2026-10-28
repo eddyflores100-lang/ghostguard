@@ -1,6 +1,7 @@
 """Separate worker proposes an action; guardian mediates a simulated effect."""
 import argparse, json, subprocess, sys
-from ghostguard import Guard, Action
+from ghostguard import Guard
+from proposals import parse_proposal
 from integrations import EvidenceLog, open_alethech_store, gemma_explain
 
 parser=argparse.ArgumentParser()
@@ -11,10 +12,7 @@ parser.add_argument('--alethech-store')
 args=parser.parse_args()
 log=EvidenceLog(open_alethech_store(args.alethech_store)) if args.alethech_store else None
 worker=subprocess.run([sys.executable,'-I','agent_worker.py'],input='{"case":"phishing"}\n',text=True,capture_output=True,check=True,timeout=5)
-proposal=json.loads(worker.stdout)
-if set(proposal)!={'tool','arguments'} or proposal['tool']!='send_email' or not isinstance(proposal['arguments'],dict):
-    raise SystemExit('Invalid agent proposal')
-action=Action(proposal['tool'],proposal['arguments'])
+action=parse_proposal(worker.stdout)
 def simulated_send(_):
     print('SIMULATED SEND: no network connection and no email sent.')
     return {'simulated':True}
