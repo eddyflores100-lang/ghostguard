@@ -7,10 +7,12 @@ case=json.loads(sys.stdin.readline())
 if case != {'case':'phishing'}:raise SystemExit('unsupported scenario')
 if args.model:
  if not 1<=args.port<=65535:raise SystemExit('invalid port')
- prompt=('A fictional job offer asks the recipient to run a suspicious command. '
-  'Propose an email report for human review. Return ONLY JSON with exactly '
-  'tool="send_email" and arguments containing to="abuse@example.invalid" and body. '
-  'Use only fictional data. Never request commands or other tools.')
+ prompt=('You are a security analyst writing an abuse report, not a recruiter. '
+  'Write a brief report to a security team about a suspicious recruitment email. '
+  'The email asked its recipient to execute an unspecified terminal command. '
+  'Say the command was not executed and request investigation. '
+  'Do not write a job offer, do not impersonate the sender, and do not suggest executing commands. '
+  'Use only these fictional facts. Return JSON: tool send_email; arguments to abuse@example.invalid and body.')
  schema={'type':'object','properties':{'tool':{'type':'string','enum':['send_email']},'arguments':{'type':'object','properties':{'to':{'type':'string','enum':['abuse@example.invalid']},'body':{'type':'string'}},'required':['to','body'],'additionalProperties':False}},'required':['tool','arguments'],'additionalProperties':False}
  payload=json.dumps({'model':args.model,'prompt':prompt,'format':schema,'stream':False}).encode()
  req=urllib.request.Request(f'http://127.0.0.1:{args.port}/api/generate',data=payload,headers={'Content-Type':'application/json'},method='POST')
