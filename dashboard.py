@@ -29,6 +29,7 @@ class App:
         self.guard = Guard({'send_email': lambda _: {'simulated': True}})
         self.evidence = evidence
         self.pending = None
+        self.advice = None
         self.lock = threading.Lock()
 
     def propose(self):
@@ -56,8 +57,18 @@ class App:
                 advice = gemma_explain(action.tool, decision['decision'], port=self.port, model=self.model)
             except (OSError, ValueError):
                 advice = 'Local advisory model unavailable. The action remains paused.'
+            self.advice = advice
             return {'tool': action.tool, 'recipient': action.arguments['to'], 'draft': action.arguments['body'],
                     'advice': advice, 'decision': 'approval_required'}
+
+    def status(self):
+        with self.lock:
+            if self.pending is None:
+                return {'decision': 'none'}
+            action, _ = self.pending
+            return {'tool': action.tool, 'recipient': action.arguments['to'],
+                    'draft': action.arguments['body'], 'advice': self.advice,
+                    'decision': 'approval_required'}
 
     def decide(self, choice):
         if choice not in ('approve', 'reject'):
@@ -67,6 +78,7 @@ class App:
                 raise ValueError('No request is pending.')
             action, token = self.pending
             self.pending = None
+            self.advice = None
             if choice == 'approve':
                 result = self.guard.approve(token, action)
             else:
@@ -117,6 +129,8 @@ def make_handler(app, token):
                 if not isinstance(body, dict): raise ValueError('Invalid body')
                 if self.path == '/api/propose' and body == {}:
                     return self._send(200, app.propose())
+                if self.path == '/api/status' and body == {}:
+                    return self._send(200, app.status())
                 if self.path == '/api/decide' and set(body) == {'decision'}:
                     return self._send(200, app.decide(body['decision']))
                 return self._send(404, {'error':'Unknown request'})

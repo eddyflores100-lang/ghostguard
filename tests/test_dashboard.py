@@ -17,8 +17,11 @@ class AppTests(unittest.TestCase):
         app = App()
         p = app.propose()
         self.assertEqual(p['decision'], 'approval_required')
+        self.assertEqual(app.status()['draft'], 'Report phishing')
+        self.assertNotIn('approval_id', app.status())
         with self.assertRaises(ValueError): app.propose()
         self.assertEqual(app.decide('reject')['decision'], 'denied')
+        self.assertEqual(app.status()['decision'], 'none')
         with self.assertRaises(ValueError): app.decide('approve')
 
     @patch('dashboard.gemma_explain', return_value='Paused')
