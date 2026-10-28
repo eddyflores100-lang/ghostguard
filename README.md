@@ -34,3 +34,7 @@ Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its depen
 ## Credits
 
 GhostGuard is a new project. [Alethech](https://github.com/eddyflores100-lang/alethech) is MIT licensed, copyright AliceLabs LLC; it is an optional external dependency and not bundled. No guarantee of contest eligibility or protection is made.
+
+## Model-generated proposal (experimental)
+
+Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-store /private/path/store` after starting Ollama and installing the model and Alethech. The worker sends a fictional phishing scenario to localhost and asks the model for a JSON proposal. The guardian validates its tool, fields and fictional recipient, then pauses for terminal review; the effect is simulated. Invalid output fails closed. Automated tests use a mock Ollama endpoint: real model inference and end-to-end performance are not yet verified. This is a minimal model-driven example, not a general agent framework or operating-system sandbox.
