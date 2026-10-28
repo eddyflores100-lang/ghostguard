@@ -11,10 +11,11 @@ Python 3.10+; the core demo requires no internet or third-party packages.
 ```sh
 python3 demo.py
 python3 interactive.py
+python3 agent_demo.py
 python3 -m unittest discover -s tests
 ```
 
-The demo reads a fictional case, denies a shell call, and pauses a simulated email. Approval capabilities bind one use to the exact action and arguments; a mismatch consumes the capability, and approvals expire after five minutes by default. The demo never approves or sends email.
+The demo reads a fictional case, denies a shell call, and pauses a simulated email. Approval capabilities bind one use to the exact action and arguments; a mismatch consumes the capability, and approvals expire after five minutes by default. The demo never approves or sends email. `agent_demo.py` starts a separate scripted worker and passes its proposed action to the guard; the human reviews it in the terminal. An approved action is simulated only. The worker is a scripted example, not an autonomous AI agent, and process separation alone is not isolation: it still has the operating-system permissions of its user.
 
 ## Optional: Gemma locally
 
