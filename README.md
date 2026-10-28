@@ -10,6 +10,7 @@ Python 3.10+; the core demo requires no internet or third-party packages.
 
 ```sh
 python3 demo.py
+python3 interactive.py
 python3 -m unittest discover -s tests
 ```
 
@@ -21,7 +22,7 @@ Install Ollama and a suitable Gemma model according to their instructions, start
 
 ## Optional: Alethech signed decision log
 
-Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its dependencies in the Python environment, then run `python3 demo.py --alethech-store /private/path/ghostguard-store`. The adapter calls Alethech to sign a commit for each tool/decision label and action hash and verifies the store afterward. The Alethech local working store is not encrypted at rest; protect its keys and use Alethech's encrypted container for portable storage. Hashes can disclose low-entropy inputs by guessing. Signatures establish integrity and provenance, not truth or completeness. The adapter is tested with a test double; a real Alethech run has not yet been verified in the development environment.
+Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its dependencies in the Python environment, then run `python3 demo.py --alethech-store /private/path/ghostguard-store`. The adapter calls Alethech to sign a commit for each tool/decision label and action hash and verifies the store afterward. The Alethech local working store is not encrypted at rest; protect its keys and use Alethech's encrypted container for portable storage. Hashes can disclose low-entropy inputs by guessing. Signatures establish integrity and provenance, not truth or completeness. The adapter is tested with a test double and was also run with Alethech 0.9.5: three decision commits were created and the resulting store verified successfully. Tampering detection remains to be tested for this integration.
 
 ## Remaining before submission
 
