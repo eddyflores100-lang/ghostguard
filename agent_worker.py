@@ -11,7 +11,8 @@ if args.model:
   'Propose an email report for human review. Return ONLY JSON with exactly '
   'tool="send_email" and arguments containing to="abuse@example.invalid" and body. '
   'Use only fictional data. Never request commands or other tools.')
- payload=json.dumps({'model':args.model,'prompt':prompt,'format':'json','stream':False}).encode()
+ schema={'type':'object','properties':{'tool':{'type':'string','enum':['send_email']},'arguments':{'type':'object','properties':{'to':{'type':'string','enum':['abuse@example.invalid']},'body':{'type':'string'}},'required':['to','body'],'additionalProperties':False}},'required':['tool','arguments'],'additionalProperties':False}
+ payload=json.dumps({'model':args.model,'prompt':prompt,'format':schema,'stream':False}).encode()
  req=urllib.request.Request(f'http://127.0.0.1:{args.port}/api/generate',data=payload,headers={'Content-Type':'application/json'},method='POST')
  try:
   with urllib.request.urlopen(req,timeout=90) as resp:
