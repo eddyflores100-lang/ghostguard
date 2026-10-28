@@ -28,6 +28,13 @@ class AppTests(unittest.TestCase):
         self.assertEqual(result['decision'], 'allowed')
         self.assertTrue(result['simulated'])
 
+    @patch('dashboard.gemma_explain', return_value='Paused')
+    @patch('dashboard.subprocess.run', return_value=Worker())
+    def test_smolagents_is_mediated_by_same_guard(self, worker, advice):
+        app = App(agent='smolagents'); app.propose()
+        self.assertTrue(worker.call_args.args[0][2].endswith('smol_worker.py'))
+        self.assertEqual(app.decide('reject')['decision'], 'denied')
+
     @patch('dashboard.subprocess.run')
     def test_invalid_proposal_fails_closed(self, worker):
         worker.return_value.stdout = '{"tool":"shell","arguments":{}}'

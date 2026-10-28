@@ -21,8 +21,10 @@ ROOT = Path(__file__).resolve().parent
 MAX_BODY = 4096
 
 class App:
-    def __init__(self, *, model='gemma3:1b', port=11434, evidence=None):
+    def __init__(self, *, model='gemma3:1b', port=11434, evidence=None, agent='minimal'):
         self.model, self.port = model, port
+        if agent not in ('minimal', 'smolagents'): raise ValueError('Unknown agent')
+        self.agent = agent
         self.guard = Guard({'send_email': lambda _: {'simulated': True}})
         self.evidence = evidence
         self.pending = None
@@ -32,7 +34,7 @@ class App:
         with self.lock:
             if self.pending is not None:
                 raise ValueError('Resolve the pending request first.')
-            worker = subprocess.run([sys.executable, '-I', str(ROOT / 'agent_worker.py'),
+            worker = subprocess.run([sys.executable, '-I', str(ROOT / ('smol_worker.py' if self.agent == 'smolagents' else 'agent_worker.py')),
                 '--model', self.model, '--port', str(self.port)], input='{"case":"phishing"}\n',
                 text=True, capture_output=True, check=True, timeout=100, cwd=str(ROOT))
             action = parse_proposal(worker.stdout)
@@ -128,13 +130,14 @@ def main():
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--ollama-port', type=int, default=11434)
     parser.add_argument('--model', default='gemma3:1b')
+    parser.add_argument('--agent', choices=('minimal', 'smolagents'), default='minimal')
     parser.add_argument('--alethech-store')
     parser.add_argument('--no-browser', action='store_true')
     args = parser.parse_args()
     if not 0 <= args.port <= 65535 or not 1 <= args.ollama_port <= 65535:
         parser.error('invalid port')
     evidence = EvidenceLog(open_alethech_store(args.alethech_store)) if args.alethech_store else None
-    app, token = App(model=args.model, port=args.ollama_port, evidence=evidence), secrets.token_urlsafe(32)
+    app, token = App(model=args.model, port=args.ollama_port, evidence=evidence, agent=args.agent), secrets.token_urlsafe(32)
     server = ThreadingHTTPServer(('127.0.0.1', args.port), make_handler(app, token))
     server.daemon_threads = True
     url = f'http://127.0.0.1:{server.server_port}/#{token}'
