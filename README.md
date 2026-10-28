@@ -2,7 +2,7 @@
 
 A local-first prototype exploring how to put a guardian between an agent and its tools. Inspired by the Taiko phishing case: an agent can correctly identify a threat yet take an external action without the intended authority.
 
-**Prototype, not a security product.** Only calls routed through `Guard` are checked. It cannot stop an agent using direct network, shell, filesystem, or credentials outside this process. It is not a firewall or sandbox. The demo has no real external actions or authenticated approval interface. Approval capabilities must never be exposed to an untrusted agent.
+**Prototype, not a security product.** Only calls routed through `Guard` are checked. It cannot stop an agent using direct network, shell, filesystem, or credentials outside this process. It is not a firewall or sandbox. The demo has no real external actions or remotely authenticated approval interface. Approval capabilities must never be exposed to an untrusted agent.
 
 ## Run
 
@@ -29,7 +29,7 @@ Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its depen
 
 - Integrate an actual agent and isolate it so it cannot bypass a process-separated gateway or access action credentials. Provide authenticated human-only approvals and expiration.
 - Document dependency licenses and reproduce the combined Gemma and Alethech flow on other systems.
-- Create a review UI and demo video or hosted build; prepare the English DEV post and cite prior work. Hosted services need internet.
+- Record a demo video and finalize the English DEV post; verify submission rules. Hosted services need internet.
 
 ## Credits
 
@@ -44,3 +44,4 @@ Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-st
 `agent_demo.py` writes one JSON object per line to `~/.ghostguard/events.jsonl` by default. Set a different path with `--log-file PATH`. Events report UTC timestamps, a random session identifier, stages, bounded durations, decision and sanitized error type. Message bodies, recipients, model responses, approval tokens and arbitrary exception messages are not written. Logs are local diagnostics: they are not signed, encrypted, automatically rotated, or an authoritative audit trail. File creation requests owner-only Unix permissions; Windows access follows the directory's ACLs. Protect the directory, delete or rotate logs as needed, and use the separately configured Alethech store for signed evidence. A log write failure stops the demo rather than silently losing diagnostics.
 
 ## Combined real-model and evidence check (2026-10-28)\n\nOn Windows, Python 3.11 in an isolated virtual environment, Ollama 0.40.11 with gemma3:1b, and Alethech 0.9.5 were used together. The model generated a valid fictional proposal, the guard paused it, Gemma provided advisory text, the test supplied a rejection, and Alethech verified the signed store. The test did not send email or verify an authenticated user interface. Model advice is not authoritative and cannot grant approval.\n
+## Local review dashboard\n\nWith Ollama running and `gemma3:1b` installed, run `python dashboard.py` and open the private URL printed by the command. The browser interface generates a fictional proposal and presents a decision. `python dashboard.py --alethech-store /private/path/store` enables signed evidence. The server listens only on 127.0.0.1 and checks a per-launch token, host and origin; it is intended for a trusted local machine, not remote use or protection from malicious local processes. The approve button only performs a simulated effect. Keep the URL private. On 2026-10-28 the dashboard backend was tested with real Gemma 3 1B and Alethech 0.9.5 using an automated rejection; the signed evidence verified.\n
