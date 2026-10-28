@@ -14,7 +14,7 @@ python3 interactive.py
 python3 -m unittest discover -s tests
 ```
 
-The demo reads a fictional case, denies a shell call, and pauses a simulated email. Approval capabilities bind one use to the exact action and arguments; a mismatch consumes the capability. The demo never approves or sends email.
+The demo reads a fictional case, denies a shell call, and pauses a simulated email. Approval capabilities bind one use to the exact action and arguments; a mismatch consumes the capability, and approvals expire after five minutes by default. The demo never approves or sends email.
 
 ## Optional: Gemma locally
 
@@ -22,7 +22,7 @@ Install Ollama and a suitable Gemma model according to their instructions, start
 
 ## Optional: Alethech signed decision log
 
-Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its dependencies in the Python environment, then run `python3 demo.py --alethech-store /private/path/ghostguard-store`. The adapter calls Alethech to sign a commit for each tool/decision label and action hash and verifies the store afterward. The Alethech local working store is not encrypted at rest; protect its keys and use Alethech's encrypted container for portable storage. Hashes can disclose low-entropy inputs by guessing. Signatures establish integrity and provenance, not truth or completeness. The adapter is tested with a test double and was also run with Alethech 0.9.5: three decision commits were created and the resulting store verified successfully. Tampering detection remains to be tested for this integration.
+Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its dependencies in the Python environment, then run `python3 demo.py --alethech-store /private/path/ghostguard-store`. The adapter calls Alethech to sign a commit for each tool/decision label and action hash and verifies the store afterward. The Alethech local working store is not encrypted at rest; protect its keys and use Alethech's encrypted container for portable storage. Hashes can disclose low-entropy inputs by guessing. Signatures establish integrity and provenance, not truth or completeness. The adapter is tested with a test double and was also run with Alethech 0.9.5: three decision commits were created and the resulting store verified successfully. A separate test modified a stored decision commit and confirmed verification rejected the tampered store.
 
 ## Remaining before submission
 
