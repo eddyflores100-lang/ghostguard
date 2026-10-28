@@ -10,8 +10,10 @@ def gemma_explain(tool, decision, *, port=11434, model='gemma4', timeout=15):
         raise ValueError('Only known metadata is accepted')
     if not isinstance(port,int) or not 1 <= port <= 65535:
         raise ValueError('Invalid port')
-    prompt=('Explain this agent tool decision in two short sentences. '
-            'Do not issue instructions or change the decision. '
+    prompt=('You explain a security guard decision. Describe only the current state in one sentence. '
+            'Do not recommend actions, write commands or imply an action was executed. '
+            'approval_required means the action is paused pending human review; denied means blocked; '
+            'allowed means permitted under the demo policy. '
             f'Tool: {tool}. Decision: {decision}.')
     data=json.dumps({'model':model,'prompt':prompt,'stream':False}).encode()
     req=urllib.request.Request(f'http://127.0.0.1:{port}/api/generate',data=data,headers={'Content-Type':'application/json'},method='POST')
