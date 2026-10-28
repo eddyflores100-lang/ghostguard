@@ -14,3 +14,10 @@ class BridgeTests(unittest.TestCase):
         p=subprocess.run([sys.executable,'agent_demo.py'],input='y\n',text=True,capture_output=True,check=True)
         self.assertIn('SIMULATED SEND',p.stdout)
         self.assertNotIn('approval_id',p.stdout)
+
+class IntegratedTests(unittest.TestCase):
+    def test_missing_model_does_not_authorize_action(self):
+        p=subprocess.run([sys.executable,'agent_demo.py','--gemma','--ollama-port','1'],input='n\n',text=True,capture_output=True,check=True,timeout=20)
+        self.assertIn('Gemma unavailable',p.stdout)
+        self.assertIn('REJECTED',p.stdout)
+        self.assertNotIn('SIMULATED SEND',p.stdout)
