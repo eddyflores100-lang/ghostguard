@@ -1,0 +1,7 @@
+FROM python:3.11-slim
+RUN pip install --no-cache-dir smolagents==1.22.0
+WORKDIR /app
+COPY smol_worker.py /app/smol_worker.py
+ENV PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+USER 65532:65532
+ENTRYPOINT []

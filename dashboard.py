@@ -16,6 +16,7 @@ from pathlib import Path
 from ghostguard import Guard
 from proposals import parse_proposal
 from integrations import EvidenceLog, gemma_explain, open_alethech_store
+from sandbox import sandbox_proposal
 
 ROOT = Path(__file__).resolve().parent
 MAX_BODY = 4096
@@ -23,7 +24,7 @@ MAX_BODY = 4096
 class App:
     def __init__(self, *, model='gemma3:1b', port=11434, evidence=None, agent='minimal'):
         self.model, self.port = model, port
-        if agent not in ('minimal', 'smolagents'): raise ValueError('Unknown agent')
+        if agent not in ('minimal', 'smolagents', 'sandbox'): raise ValueError('Unknown agent')
         self.agent = agent
         self.guard = Guard({'send_email': lambda _: {'simulated': True}})
         self.evidence = evidence
@@ -34,10 +35,13 @@ class App:
         with self.lock:
             if self.pending is not None:
                 raise ValueError('Resolve the pending request first.')
-            worker = subprocess.run([sys.executable, '-I', str(ROOT / ('smol_worker.py' if self.agent == 'smolagents' else 'agent_worker.py')),
-                '--model', self.model, '--port', str(self.port)], input='{"case":"phishing"}\n',
-                text=True, capture_output=True, check=True, timeout=100, cwd=str(ROOT))
-            action = parse_proposal(worker.stdout)
+            if self.agent == 'sandbox':
+                action = sandbox_proposal(model=self.model, port=self.port)
+            else:
+                worker = subprocess.run([sys.executable, '-I', str(ROOT / ('smol_worker.py' if self.agent == 'smolagents' else 'agent_worker.py')),
+                    '--model', self.model, '--port', str(self.port)], input='{"case":"phishing"}\n',
+                    text=True, capture_output=True, check=True, timeout=100, cwd=str(ROOT))
+                action = parse_proposal(worker.stdout)
             decision = self.guard.run(action)
             if decision['decision'] != 'approval_required':
                 raise ValueError('The action was not eligible for review.')
@@ -130,7 +134,7 @@ def main():
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--ollama-port', type=int, default=11434)
     parser.add_argument('--model', default='gemma3:1b')
-    parser.add_argument('--agent', choices=('minimal', 'smolagents'), default='minimal')
+    parser.add_argument('--agent', choices=('minimal', 'smolagents', 'sandbox'), default='minimal')
     parser.add_argument('--alethech-store')
     parser.add_argument('--no-browser', action='store_true')
     args = parser.parse_args()
