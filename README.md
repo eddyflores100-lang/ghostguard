@@ -1,25 +1,34 @@
-# GhostGuard — guardian for agent tool calls
+# GhostGuard — an agent's guardian
 
-**Prototype, not a security product.** A local example intercepts calls made through its own guard. It cannot prevent direct network, shell, file, or tool calls made around that guard; isolate untrusted agents with independent OS-level controls. No production email, authentication, Gemma, Alethech, hosted demo, or external agent integration is implemented yet.
+A local-first prototype exploring how to put a guardian between an agent and its tools. Inspired by the Taiko phishing case: an agent can correctly identify a threat yet take an external action without the intended authority.
+
+**Prototype, not a security product.** Only calls routed through `Guard` are checked. It cannot stop an agent using direct network, shell, filesystem, or credentials outside this process. It is not a firewall or sandbox. The demo has no real external actions or authenticated approval interface. Approval capabilities must never be exposed to an untrusted agent.
 
 ## Run
 
-Python 3.10+; no third-party dependencies or internet required for this prototype.
+Python 3.10+; the core demo requires no internet or third-party packages.
 
 ```sh
 python3 demo.py
 python3 -m unittest discover -s tests
 ```
 
-The demo reads a fictional case, denies a shell call and pauses a simulated email. Approvals bind a single-use random capability to the hash of the exact tool and arguments. The demo does not automatically approve. Never expose approval tokens to an agent; this demo is in-process and has no authenticated human approval interface.
+The demo reads a fictional case, denies a shell call, and pauses a simulated email. Approval capabilities bind one use to the exact action and arguments; a mismatch consumes the capability. The demo never approves or sends email.
 
-## Design and remaining work
+## Optional: Gemma locally
 
-1. Implement a process-separated tool gateway with authenticated, human-only approval, expiration, argument binding and enforcement against bypass; integrate an open-source agent through the gateway with no direct credentials.
-2. Integrate Gemma via a locally running model server. Treat its output as advisory, never authorization; when unavailable the policy remains deterministic and fails closed for external actions. Verify real model inference and document model licensing and hardware requirements.
-3. Integrate [Alethech](https://github.com/eddyflores100-lang/alethech), MIT, to sign decision evidence; ensure no secrets or full sensitive payloads are stored. Verify a real export and tamper detection. Its signed records establish integrity and provenance, not the truth of an event.
-4. Provide a review UI, realistic isolated demo and a DEV post. Optional hosted integrations (Auth0, Render, Sentry) require network and must not be described as offline. A video or hosted demo is required for submission.
+Install Ollama and a suitable Gemma model according to their instructions, start Ollama on localhost and install `gemma4` (model setup needs internet). Then run `python3 demo.py --gemma`. The adapter sends **only** tool and decision labels to `127.0.0.1:11434`, never the action arguments. The model's explanation is advisory and never changes policy. If unavailable, decisions stay unchanged. Model hardware requirements and license depend on the chosen Gemma version. This integration is tested against a local mock HTTP endpoint, not a real model in the development environment.
 
-## Prior work and competition
+## Optional: Alethech signed decision log
 
-This is a new project inspired by the publicly documented Taiko incident and by Alethech; it does not currently embed their code. Public release requires a privacy and licensing review. No claim of eligibility or complete protection is made.
+Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its dependencies in the Python environment, then run `python3 demo.py --alethech-store /private/path/ghostguard-store`. The adapter calls Alethech to sign a commit for each tool/decision label and action hash and verifies the store afterward. The Alethech local working store is not encrypted at rest; protect its keys and use Alethech's encrypted container for portable storage. Hashes can disclose low-entropy inputs by guessing. Signatures establish integrity and provenance, not truth or completeness. The adapter is tested with a test double; a real Alethech run has not yet been verified in the development environment.
+
+## Remaining before submission
+
+- Integrate an actual agent and isolate it so it cannot bypass a process-separated gateway or access action credentials. Provide authenticated human-only approvals and expiration.
+- Run and verify real Gemma inference and actual Alethech signing and tamper detection, using their documented licenses.
+- Create a review UI and demo video or hosted build; prepare the English DEV post and cite prior work. Hosted services need internet.
+
+## Credits
+
+GhostGuard is a new project. [Alethech](https://github.com/eddyflores100-lang/alethech) is MIT licensed, copyright AliceLabs LLC; it is an optional external dependency and not bundled. No guarantee of contest eligibility or protection is made.
