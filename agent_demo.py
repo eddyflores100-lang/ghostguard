@@ -8,10 +8,13 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--gemma',action='store_true')
 parser.add_argument('--ollama-port',type=int,default=11434)
 parser.add_argument('--model',default='gemma3:1b')
+parser.add_argument('--model-agent',action='store_true',help='Generate proposal with the local model')
 parser.add_argument('--alethech-store')
 args=parser.parse_args()
 log=EvidenceLog(open_alethech_store(args.alethech_store)) if args.alethech_store else None
-worker=subprocess.run([sys.executable,'-I','agent_worker.py'],input='{"case":"phishing"}\n',text=True,capture_output=True,check=True,timeout=5)
+worker_args=[sys.executable,'-I','agent_worker.py']
+if args.model_agent:worker_args += ['--model',args.model,'--port',str(args.ollama_port)]
+worker=subprocess.run(worker_args,input='{"case":"phishing"}\n',text=True,capture_output=True,check=True,timeout=100)
 action=parse_proposal(worker.stdout)
 def simulated_send(_):
     print('SIMULATED SEND: no network connection and no email sent.')
