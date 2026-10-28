@@ -38,3 +38,7 @@ GhostGuard is a new project. [Alethech](https://github.com/eddyflores100-lang/al
 ## Model-generated proposal (experimental)
 
 Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-store /private/path/store` after starting Ollama and installing the model and Alethech. The worker sends a fictional phishing scenario to localhost and asks the model for a JSON proposal. The guardian validates its tool, fields and fictional recipient, then pauses for terminal review; the effect is simulated. Invalid output fails closed. Automated tests use a mock Ollama endpoint: real model inference and end-to-end performance are not yet verified. This is a minimal model-driven example, not a general agent framework or operating-system sandbox.
+
+## Diagnostic logs
+
+`agent_demo.py` writes one JSON object per line to `~/.ghostguard/events.jsonl` by default. Set a different path with `--log-file PATH`. Events report UTC timestamps, a random session identifier, stages, bounded durations, decision and sanitized error type. Message bodies, recipients, model responses, approval tokens and arbitrary exception messages are not written. Logs are local diagnostics: they are not signed, encrypted, automatically rotated, or an authoritative audit trail. File creation requests owner-only Unix permissions; Windows access follows the directory's ACLs. Protect the directory, delete or rotate logs as needed, and use the separately configured Alethech store for signed evidence. A log write failure stops the demo rather than silently losing diagnostics.
