@@ -19,7 +19,7 @@ The demo reads a fictional case, denies a shell call, and pauses a simulated ema
 
 ## Optional: Gemma locally
 
-Install Ollama and a suitable Gemma model according to their instructions, start Ollama on localhost and install `gemma4` (model setup needs internet). Then run `python3 demo.py --gemma`. The adapter sends **only** tool and decision labels to `127.0.0.1:11434`, never the action arguments. The model's explanation is advisory and never changes policy. If unavailable, decisions stay unchanged. Model hardware requirements and license depend on the chosen Gemma version. This integration is tested against a local mock HTTP endpoint, not a real model in the development environment.
+Install Ollama and a suitable Gemma model according to their instructions, start Ollama on localhost and install `gemma3:1b` (model setup needs internet). Then run `python3 demo.py --gemma`. The adapter sends **only** tool and decision labels to `127.0.0.1:11434`, never the action arguments. The model's explanation is advisory and never changes policy. If unavailable, decisions stay unchanged. Model hardware requirements and license depend on the chosen Gemma version. On 2026-10-28, a Windows test with Ollama 0.40.11 and gemma3:1b exercised a real local model proposal and advisory response; the proposed simulated email was rejected.
 
 ## Optional: Alethech signed decision log
 
@@ -28,7 +28,7 @@ Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its depen
 ## Remaining before submission
 
 - Integrate an actual agent and isolate it so it cannot bypass a process-separated gateway or access action credentials. Provide authenticated human-only approvals and expiration.
-- Run and verify real Gemma inference and actual Alethech signing and tamper detection, using their documented licenses.
+- Repeat the combined real Gemma and Alethech flow on one machine and document dependency licenses.
 - Create a review UI and demo video or hosted build; prepare the English DEV post and cite prior work. Hosted services need internet.
 
 ## Credits
@@ -37,7 +37,7 @@ GhostGuard is a new project. [Alethech](https://github.com/eddyflores100-lang/al
 
 ## Model-generated proposal (experimental)
 
-Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-store /private/path/store` after starting Ollama and installing the model and Alethech. The worker sends a fictional phishing scenario to localhost and asks the model for a JSON proposal. The guardian validates its tool, fields and fictional recipient, then pauses for terminal review; the effect is simulated. Invalid output fails closed. Automated tests use a mock Ollama endpoint: real model inference and end-to-end performance are not yet verified. This is a minimal model-driven example, not a general agent framework or operating-system sandbox.
+Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-store /private/path/store` after starting Ollama and installing the model and Alethech. The worker sends a fictional phishing scenario to localhost and asks the model for a JSON proposal. The guardian validates its tool, fields and fictional recipient, then pauses for terminal review; the effect is simulated. Invalid output fails closed. Automated tests use a mock Ollama endpoint. A real model run on 2026-10-28 generated a valid proposal, produced advisory text, and recorded a human-denial path; no email was sent. This is a minimal model-driven example, not a general agent framework or operating-system sandbox.
 
 ## Diagnostic logs
 
