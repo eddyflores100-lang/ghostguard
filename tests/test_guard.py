@@ -28,3 +28,14 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(calls,[])
 
 if __name__=='__main__':unittest.main()
+
+class ExpirationTests(unittest.TestCase):
+    def test_approval_expires_and_does_not_execute(self):
+        calls=[]
+        now=[100.0]
+        g=Guard({'send_email':lambda a:calls.append(a)}, clock=lambda:now[0], approval_ttl=10)
+        action=Action('send_email',{'to':'a@example.invalid'})
+        token=g.run(action)['approval_id']
+        now[0]=110.0
+        self.assertEqual(g.approve(token,action)['decision'],'denied')
+        self.assertEqual(calls,[])
