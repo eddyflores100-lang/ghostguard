@@ -40,7 +40,7 @@ Gemma can run on a machine I control, and smolagents exposes the agent machinery
 
 ## What I would build next
 
-The next steps are a broader independently enforced tool gateway, authenticated remote approvals, better threat-model testing, and a demonstration recording. Real integrations would need explicit permissions, credential isolation, and a way to prevent agents from reaching side-effecting tools outside the gateway. GhostGuard does not yet provide those guarantees.
+An automated 40-second local demonstration was recorded, showing a fictional proposal, recovery after a page reload, rejection, and verified evidence. It is not yet publicly hosted, and the interaction was automated rather than performed by a human. The next steps are a broader independently enforced tool gateway, authenticated remote approvals, and better threat-model testing. Real integrations would need explicit permissions, credential isolation, and a way to prevent agents from reaching side-effecting tools outside the gateway. GhostGuard does not yet provide those guarantees.
 
 Repository: https://github.com/eddyflores100-lang/ghostguard
 
