@@ -33,6 +33,27 @@ class AppTests(unittest.TestCase):
 
     @patch('dashboard.gemma_explain', return_value='Paused')
     @patch('dashboard.subprocess.run', return_value=Worker())
+    def test_concurrent_approvals_execute_only_once(self, worker, advice):
+        app = App(); app.propose()
+        calls = []
+        app.guard.tools['send_email'] = lambda _: calls.append('executed') or {'simulated': True}
+        barrier = threading.Barrier(3)
+        results = []
+        def approve():
+            barrier.wait()
+            try:
+                results.append(app.decide('approve')['decision'])
+            except ValueError:
+                results.append('already consumed')
+        threads = [threading.Thread(target=approve) for _ in range(2)]
+        for thread in threads: thread.start()
+        barrier.wait()
+        for thread in threads: thread.join()
+        self.assertCountEqual(results, ['allowed', 'already consumed'])
+        self.assertEqual(calls, ['executed'])
+
+    @patch('dashboard.gemma_explain', return_value='Paused')
+    @patch('dashboard.subprocess.run', return_value=Worker())
     def test_smolagents_is_mediated_by_same_guard(self, worker, advice):
         app = App(agent='smolagents'); app.propose()
         self.assertTrue(worker.call_args.args[0][2].endswith('smol_worker.py'))
