@@ -16,7 +16,10 @@ function showProposal(p) {
   el('review').hidden=false;el('empty').hidden=true;el('state').textContent='AWAITING YOUR REVIEW';
   el('message').textContent='This action is paused. Nothing has been sent.';
 }
-if (token) call('/api/status',{}).then(p=>{if(p.decision==='approval_required')showProposal(p);}).catch(e=>{el('message').textContent=e.message;});
+if (token) call('/api/status',{}).then(p=>{
+  if(p.decision==='approval_required') showProposal(p);
+  else if(p.decision==='expired') {el('state').textContent='EXPIRED';el('message').textContent='The previous request expired. No action was executed.';}
+}).catch(e=>{el('message').textContent=e.message;});
 el('start').onclick = async () => {
   if (busy) return; setBusy(true); el('message').textContent='Generating with your local model…';
   try { const p=await call('/api/propose',{}); showProposal(p); }
@@ -27,3 +30,4 @@ for (const decision of ['approve','reject']) el(decision).onclick=async()=>{
   try {const r=await call('/api/decide',{decision});el('review').hidden=true;el('empty').hidden=false;el('state').textContent=r.decision.toUpperCase();el('message').textContent=r.simulated?'Approved simulation. No email was sent.':'Rejected or expired. No action was executed.';if(r.evidence_verified)el('message').textContent+=' Signed evidence verified.';}
   catch(e){el('message').textContent=e.message;}finally{setBusy(false);}
 };
+

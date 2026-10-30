@@ -11,6 +11,22 @@ class Worker:
     stdout = PROPOSAL
 
 class AppTests(unittest.TestCase):
+    @patch('dashboard.gemma_explain', return_value='Paused')
+    @patch('dashboard.subprocess.run', return_value=Worker())
+    def test_expired_request_is_cleared_and_cannot_block_new_review(self, worker, advice):
+        app = App()
+        clock = [100.0]
+        app.guard.clock = lambda: clock[0]
+        calls = []
+        app.guard.tools['send_email'] = lambda _: calls.append('executed')
+        app.propose()
+        clock[0] += app.guard.approval_ttl
+        self.assertEqual(app.status()['decision'], 'expired')
+        self.assertEqual(calls, [])
+        with self.assertRaises(ValueError):
+            app.decide('approve')
+        self.assertEqual(app.propose()['decision'], 'approval_required')
+
     @patch('dashboard.gemma_explain', return_value='Paused for review')
     @patch('dashboard.subprocess.run', return_value=Worker())
     def test_review_reject_and_single_use(self, worker, advice):
@@ -83,3 +99,4 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(self.request({**base,'Origin':'http://evil.example'}),403)
         self.assertEqual(self.request({**base,'X-GhostGuard-Token':'bad'}),403)
         self.assertEqual(self.request({**base,'Host':'evil.example'}),403)
+

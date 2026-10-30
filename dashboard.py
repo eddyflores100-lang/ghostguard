@@ -32,8 +32,26 @@ class App:
         self.advice = None
         self.lock = threading.Lock()
 
+    def _expire_pending(self):
+        if self.pending is None:
+            return False
+        action, token = self.pending
+        approval = self.guard.pending.get(token)
+        if approval is not None and self.guard.clock() < approval[1]:
+            return False
+        event = self.guard._record(action, 'denied', reason='Approval expired or unavailable')
+        if self.evidence:
+            self.evidence.record(event)
+            if not self.evidence.agent.verify().ok:
+                raise RuntimeError('Evidence verification failed.')
+        self.guard.pending.pop(token, None)
+        self.pending = None
+        self.advice = None
+        return True
+
     def propose(self):
         with self.lock:
+            self._expire_pending()
             if self.pending is not None:
                 raise ValueError('Resolve the pending request first.')
             if self.agent == 'sandbox':
@@ -63,6 +81,8 @@ class App:
 
     def status(self):
         with self.lock:
+            if self._expire_pending():
+                return {'decision': 'expired'}
             if self.pending is None:
                 return {'decision': 'none'}
             action, _ = self.pending
@@ -167,3 +187,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

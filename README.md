@@ -27,7 +27,7 @@ Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its depen
 
 ## Remaining before submission
 
-- Integrate an actual agent and isolate it so it cannot bypass a process-separated gateway or access action credentials. Provide authenticated human-only approvals and expiration.
+- Validate an actual human decision in the local dashboard and extend the isolated gateway beyond the fictional, simulated tool. The loopback token is not a defense against malicious local processes.
 - Document dependency licenses and reproduce the combined Gemma and Alethech flow on other systems.
 - Record a demo video and finalize the English DEV post; verify submission rules. Hosted services need internet.
 
@@ -43,8 +43,14 @@ Run `python3 agent_demo.py --model-agent --gemma --model gemma3:1b --alethech-st
 
 `agent_demo.py` writes one JSON object per line to `~/.ghostguard/events.jsonl` by default. Set a different path with `--log-file PATH`. Events report UTC timestamps, a random session identifier, stages, bounded durations, decision and sanitized error type. Message bodies, recipients, model responses, approval tokens and arbitrary exception messages are not written. Logs are local diagnostics: they are not signed, encrypted, automatically rotated, or an authoritative audit trail. File creation requests owner-only Unix permissions; Windows access follows the directory's ACLs. Protect the directory, delete or rotate logs as needed, and use the separately configured Alethech store for signed evidence. A log write failure stops the demo rather than silently losing diagnostics.
 
-## Combined real-model and evidence check (2026-10-28)\n\nOn Windows, Python 3.11 in an isolated virtual environment, Ollama 0.40.11 with gemma3:1b, and Alethech 0.9.5 were used together. The model generated a valid fictional proposal, the guard paused it, Gemma provided advisory text, the test supplied a rejection, and Alethech verified the signed store. The test did not send email or verify an authenticated user interface. Model advice is not authoritative and cannot grant approval.\n
-## Local review dashboard\n\nWith Ollama running and `gemma3:1b` installed, run `python dashboard.py` and open the private URL printed by the command. The browser interface generates a fictional proposal and presents a decision. `python dashboard.py --alethech-store /private/path/store` enables signed evidence. The server listens only on 127.0.0.1 and checks a per-launch token, host and origin; it is intended for a trusted local machine, not remote use or protection from malicious local processes. The approve button only performs a simulated effect. Keep the URL private. On 2026-10-28 the dashboard backend was tested with real Gemma 3 1B and Alethech 0.9.5 using an automated rejection; the signed evidence verified.\n
+## Combined real-model and evidence check (2026-10-28)
+
+On Windows, Python 3.11 in an isolated virtual environment, Ollama 0.40.11 with gemma3:1b, and Alethech 0.9.5 were used together. The model generated a valid fictional proposal, the guard paused it, Gemma provided advisory text, the test supplied a rejection, and Alethech verified the signed store. The test did not send email or verify an authenticated user interface. Model advice is not authoritative and cannot grant approval.
+
+## Local review dashboard
+
+With Ollama running and `gemma3:1b` installed, run `python dashboard.py` and open the private URL printed by the command. The browser interface generates a fictional proposal and presents a decision. `python dashboard.py --alethech-store /private/path/store` enables signed evidence. The server listens only on 127.0.0.1 and checks a per-launch token, host and origin; it is intended for a trusted local machine, not remote use or protection from malicious local processes. The approve button only performs a simulated effect. Expired approvals are discarded when the dashboard checks status or requests a new proposal; with Alethech configured, that expiration is recorded as a denied decision before the request is cleared. Keep the URL private. On 2026-10-28 the dashboard backend was tested with real Gemma 3 1B and Alethech 0.9.5 using an automated rejection; the signed evidence verified.
+
 ## Optional smolagents integration
 
 Install smolagents 1.22.0 into the same Python environment and run `python dashboard.py --agent smolagents --alethech-store /private/path/store`. This uses Hugging Face smolagents ToolCallingAgent with an adapter for the local Gemma JSON proposal. The sole custom tool submits a fictional proposal to the parent guard; it cannot send email. On 2026-10-28, a Windows test with smolagents 1.22.0, Ollama 0.40.11, Gemma 3 1B, and Alethech 0.9.5 generated a proposal, paused it, supplied an automated rejection, and verified signed evidence. It did not test interactive human approval or operating-system isolation. The agent process still has the user's normal OS permissions; the bridge cannot stop it from bypassing the guard outside the demo.
@@ -58,3 +64,8 @@ On 2026-10-28, Docker Desktop 29.2.0 on Windows, smolagents 1.22.0, Gemma 3 1B a
 ## Browser smoke test
 
 An automated Chrome test on Windows on 2026-10-28 exercised the dashboard with real Gemma, the restricted agent container and Alethech: generate, reload, recover the pending request, reject and verify evidence. No email was sent. This was automated; it does not establish a human performed the review. To reproduce, install Playwright and Alethech in the Python environment, set GHOSTGUARD_BROWSER to a Chromium-compatible executable, start Ollama with gemma3:1b, build the container image, then run `python tests/browser_smoke.py`.
+
+
+## Additional evidence check (2026-10-30)
+
+On Linux with Python 3.12 and Alethech 0.9.5, the core demo recorded its simulated allow, deny and approval-required decisions and verified the resulting store. A separate local test advanced a test clock beyond expiry, discarded the fictional pending request, recorded a denial and verified the signed store. The latter used a simulated proposal and mocked model response; it did not test a real human decision, Gemma inference, Docker, or email delivery.
