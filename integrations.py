@@ -5,7 +5,7 @@ import urllib.request
 TOOLS={'read_case','send_email','shell','unknown'}
 DECISIONS={'allowed','denied','approval_required'}
 
-def gemma_explain(tool, decision, *, port=11434, model='gemma4', timeout=15):
+def gemma_explain(tool, decision, *, port=11434, model='gemma3:1b', timeout=15):
     if tool not in TOOLS or decision not in DECISIONS:
         raise ValueError('Only known metadata is accepted')
     if not isinstance(port,int) or not 1 <= port <= 65535:

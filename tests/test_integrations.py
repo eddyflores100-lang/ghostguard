@@ -17,7 +17,7 @@ class IntegrationTests(unittest.TestCase):
             reply=gemma_explain('send_email','approval_required',port=s.server_port)
             t.join(timeout=5)
             self.assertEqual(reply,'Review this request.')
-            self.assertEqual(s.payload['model'],'gemma4')
+            self.assertEqual(s.payload['model'],'gemma3:1b')
             self.assertNotIn('secret',json.dumps(s.payload))
         finally:s.server_close()
     def test_unsupported_tool_metadata_is_rejected(self):

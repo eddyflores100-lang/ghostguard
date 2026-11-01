@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "updated": "2026-10-31",
+  "incidents": [
+    {
+      "id": "taikotalent-2026-10",
+      "name": "taikotalent.xyz fake-recruiter terminal trojan",
+      "aka": "The 'Anti-bot check with Terminal' campaign",
+      "first_seen": "2026-10-05",
+      "laid_to_rest": "2026-10-10",
+      "rest_verified": "2026-10-15",
+      "cause_of_death": "Registrar clientHold ~12 hours after evidence-backed abuse reports (AWS case 179121234700301, NameCheap ticket NC-DFA-2100, 13 notified channels)",
+      "epitaph": "It asked developers to paste a downloader into their own terminal. No exploit was needed; the user executed the malware themselves.",
+      "vector": "Fake 'Engineering opening' recruiting emails sent to developers harvested from public GitHub profiles; a fake application portal; an 'Anti-bot check with Terminal' page; self-executed downloader",
+      "residue": "C2 domains api.gaganata.ink and api.fallgganata.ink were still answering at disclosure time; reports remain pending",
+      "evidence": "https://github.com/eddyflores100-lang/taikotalent-phishing-iocs",
+      "lessons": [
+        {
+          "candle": "IDENTIFIED IS NOT AUTHORIZED",
+          "lesson": "An agent can correctly recognize a threat and still take an external action it was never authorized to take. Recognition and permission are different faculties.",
+          "enforced_by": "human_approval"
+        },
+        {
+          "candle": "THE PASTE IS THE PAYLOAD",
+          "lesson": "The dangerous step was an ordinary terminal command typed by a trusting user. The failure point is authority, not capability.",
+          "enforced_by": "allowlist"
+        },
+        {
+          "candle": "ONE BREATH, ONE ACTION",
+          "lesson": "An approval that lives forever is not consent. Authority must expire, because the context that justified it expires.",
+          "enforced_by": "approval_ttl"
+        },
+        {
+          "candle": "EXACT WORDS OR NOTHING",
+          "lesson": "Consent for one action is not consent for a similar action. Approval binds to a digest of the exact tool and arguments, and a mismatch consumes the capability.",
+          "enforced_by": "digest_binding"
+        },
+        {
+          "candle": "NO BODY, NO FUNERAL",
+          "lesson": "An effect that cannot be shown to a human before it happens should not happen. Every external effect in this project is simulated.",
+          "enforced_by": "simulated_effect"
+        },
+        {
+          "candle": "LET THE DEAD TESTIFY",
+          "lesson": "Open evidence took the domain down in about twelve hours. Decisions should leave verifiable traces, signed and independent of the process that made them.",
+          "enforced_by": "signed_evidence"
+        },
+        {
+          "candle": "A GHOST MUST NOT COMMAND",
+          "lesson": "A model may explain a decision in its own words, but it must never be able to grant permission or change policy.",
+          "enforced_by": "advisory_only_model"
+        }
+      ]
+    }
+  ]
+}

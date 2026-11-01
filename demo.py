@@ -5,7 +5,7 @@ from ghostguard import Guard, Action
 from integrations import EvidenceLog, open_alethech_store, gemma_explain
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--gemma',action='store_true',help='Explain decisions using local Ollama gemma4')
+parser.add_argument('--gemma',action='store_true',help='Explain decisions using local Ollama Gemma 3')
 parser.add_argument('--alethech-store',help='Write signed decision metadata to this local store')
 args=parser.parse_args()
 log=EvidenceLog(open_alethech_store(args.alethech_store)) if args.alethech_store else None

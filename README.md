@@ -4,6 +4,24 @@ A local-first prototype exploring how to put a guardian between an agent and its
 
 **Prototype, not a security product.** Only calls routed through `Guard` are checked. It cannot stop an agent using direct network, shell, filesystem, or credentials outside this process. It is not a firewall or sandbox. The demo has no real external actions or remotely authenticated approval interface. Approval capabilities must never be exposed to an untrusted agent.
 
+## Ghost in the Machine
+
+This project was built for the Hacktoberfest Open-Source AI Challenge ("Ghost in the Machine"), which ran across Halloween and Día de los Muertos (Nov 1–2). GhostGuard takes the theme literally, twice.
+
+The first ghost is the guardian: a small spirit that lives inside the machine, watches every tool call an agent proposes, and quietly says *not yet* until a living person agrees. It cannot be bribed with a prompt, it forgets every permission after five minutes, and it cannot be talked into executing anything — those are not slogans, they are properties of the code.
+
+The second ghost is the one the project honors. In October 2026, a fake-recruiter campaign (`taikotalent.xyz`) sent developers phishing pages that ended in an "Anti-bot check with Terminal": the payload was pasted into the victim's own terminal, no exploit needed. An agent that reads the news can identify that threat perfectly — and still forward the same kind of message with nobody's permission. The campaign domain was taken down in about twelve hours after open, evidence-backed reports. The incident is dead; its lessons are not. Each lesson is enforced somewhere in this repository, and each is honored on the ofrenda.
+
+## The Ofrenda
+
+`ofrenda.py` renders a terminal vigil (Día de los Muertos) for the incidents that shaped this guardian. It is a contract, not decoration: every candle is a lesson drawn from a real, documented incident, and every lesson names the mechanism in this repository that enforces it. `--check` fails closed if that mapping ever breaks, and `tests/test_ofrenda.py` holds it against the living code.
+
+```sh
+python3 ofrenda.py           # render the vigil
+python3 ofrenda.py --check   # every candle maps to an enforced mechanism, and every mechanism is honored
+python3 ofrenda.py --json    # machine-readable incidents and mechanisms
+```
+
 ## Run
 
 Python 3.10+; the core demo requires no internet or third-party packages.
@@ -29,7 +47,7 @@ Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its depen
 
 - Validate an actual human decision in the local dashboard and extend the isolated gateway beyond the fictional, simulated tool. The loopback token is not a defense against malicious local processes.
 - Document dependency licenses and reproduce the combined Gemma and Alethech flow on other systems.
-- Record a demo video and finalize the English DEV post; verify submission rules. Hosted services need internet.
+- Record a privacy-reviewed public demo video (optional). The English DEV submission post is finalized in `tests/devpost-draft.md`.
 
 ## Credits
 
