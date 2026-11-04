@@ -11,7 +11,19 @@ Status: **not yet performed**. This procedure prepares a human-operated test; fo
 
 ## Human-operated procedure
 
-1. Start the dashboard with the restricted worker and a private store: `python dashboard.py --agent sandbox --alethech-store /private/path/store`. Replace the example path with an appropriate **new local directory** for the operating system. Open the printed private URL only on that computer. Do not publish it.
+1. From the repository directory, start the dashboard with the restricted worker and a **new private local store**, using the Python interpreter in the environment where Alethech is installed. Examples (replace both placeholder paths; do not paste secrets into reports):
+
+   Linux/macOS:
+   ```sh
+   /path/to/venv/bin/python dashboard.py --agent sandbox --alethech-store /private/path/new-store
+   ```
+
+   Windows PowerShell:
+   ```powershell
+   & 'C:\path\to\venv\Scripts\python.exe' dashboard.py --agent sandbox --alethech-store 'C:\path\to\private\new-store'
+   ```
+
+   The `python` command may not be on PATH on Windows even when a Python installation exists. Choose the interpreter with Alethech installed; a system `py` launcher can select a different environment. Open the printed private URL only on that computer. Do not publish it.
 2. A person clicks **Generate a proposal** and waits for the review panel. Confirm that the tool, fictional recipient and draft are visible and that no action has been sent. Reload once; confirm that the same pending proposal returns.
 3. The person reads the proposal and clicks **Approve simulation** before expiry. Confirm the interface reports “Approved simulation. No email was sent.” and “Signed evidence verified.” Save only the result, not the private URL or store.
 4. Generate a fresh proposal. The person clicks **Reject**. Confirm “Rejected or expired. No action was executed.” and “Signed evidence verified.”
