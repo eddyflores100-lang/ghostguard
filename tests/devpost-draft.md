@@ -15,7 +15,7 @@ In October 2026, a fake-recruiter campaign at `taikotalent.xyz` (impersonating T
 
 A public incident record documents indicators and a timeline for this campaign. This prototype uses a fictional scenario inspired by that account; the causal effect of any particular report on the takedown is not established here.
 
-But the post-mortem left a question I could not stop thinking about: **an agent could recognize a threat yet still propose an unauthorized action.** For example, it might draft a report to an address without the user's permission. Recognizing danger and having permission to act are two different faculties. The Taiko case killed the domain, but it could not fix that gap.
+But the post-mortem left a question I could not stop thinking about: **an agent could recognize a threat yet still propose an unauthorized action.** For example, it might draft a report to an address without the user's permission. Recognizing danger and having permission to act are two different faculties. The incident record illustrates the gap without establishing the cause of the domain takedown.
 
 So for Ghost in the Machine, I built a ghost for the gap.
 
@@ -43,7 +43,7 @@ Stopped: human approval required. Demo will not approve or send.
 
 **Ghost number one is the guardian.** It is literally a ghost in the machine: invisible to the user until it needs to speak, insubstantial to the attacker (a digest binds approval to the proposed action), and it never takes credit — it just stands in the doorway and says *not yet*.
 
-**Ghost number two is the honored dead.** The challenge fell across Día de los Muertos, so GhostGuard ships with `ofrenda.py` — a terminal ofrenda for the incidents that shaped the guardian. Each candle is a lesson drawn from the Taiko campaign, and — this is the part I care about — **each lesson names the mechanism in this repository that enforces it today.** It is not decoration; it is a contract. `ofrenda.py --check` fails closed if any lesson ever loses its enforcement, and the test suite verifies that every mechanism in the code is honored by a candle, and every candle is backed by a mechanism:
+**Ghost number two is the honored dead.** The challenge fell across Día de los Muertos, so GhostGuard ships with `ofrenda.py` — a terminal ofrenda for the incidents that shaped the guardian. Each candle is a lesson drawn from the Taiko campaign, and — this is the part I care about — **each lesson names the mechanism in this repository that enforces it today.** `ofrenda.py --check` validates the declared mappings between lessons and named mechanisms. It does not independently verify that every mapped mechanism enforces its lesson; separate tests exercise selected behaviors:
 
 ```text
 1. IDENTIFIED IS NOT AUTHORIZED  -> enforced by human_approval
@@ -78,14 +78,14 @@ If Ollama is down, nothing breaks: the model's words are advisory, policy is det
 **The guardian itself only works because the pieces are open.** This is trust infrastructure; "trust me" is not an architecture. With open weights (Gemma 3), an open harness (smolagents), an open signing layer (Alethech) and an open guard you can read in one sitting, every claim in this post is checkable against the code:
 
 - The advisory adapter sends tool and decision labels to the configured local Ollama service; the separate proposal-generation path sends a fictional scenario. This is not a general guarantee that data cannot leave the machine.
-- The "advisory, not authoritative" claim about the model is checkable because there is no code path from Gemma's output to a permission grant — and the test suite proves the negative.
+- The model is advisory in the demonstrated flow; tests cover selected attempts to authorize or alter actions, but do not prove the absence of every possible bypass.
 - The "approvals expire" claim is a five-minute property of a forty-line core you can audit over coffee.
 
 You cannot verify any of that against a closed API, and the whole point of a guardian is that you can verify it.
 
 ## Best Use of Gemma
 
-Gemma 3 1B earns its place here by being small enough to live inside the machine it protects: it drafts the fictional report under a JSON schema, explains decisions in plain language, and fits on the modest hardware people actually own. It is a ghost in the truest sense — present, useful, and impossible to bribe, because its words never touch the policy engine.
+Gemma 3 1B earns its place here by being small enough to live inside the machine it protects: it drafts the fictional report under a JSON schema, explains decisions in plain language, and fits on the modest hardware people actually own. It is a ghost in the truest sense — present, useful, with advisory output that does not grant approval in the demonstrated flow.
 
 ## Honest limitations
 
