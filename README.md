@@ -84,6 +84,10 @@ On 2026-10-28, Docker Desktop 29.2.0 on Windows, smolagents 1.22.0, Gemma 3 1B a
 An automated Chrome test on Windows on 2026-10-28 exercised the dashboard with real Gemma, the restricted agent container and Alethech: generate, reload, recover the pending request, reject and verify evidence. No email was sent. This was automated; it does not establish a human performed the review. To reproduce, install Playwright and Alethech in the Python environment, set GHOSTGUARD_BROWSER to a Chromium-compatible executable, start Ollama with gemma3:1b, build the container image, then run `python tests/browser_smoke.py`.
 
 
+## Reproduced browser test (2026-11-04)
+
+On a Windows HP using the clean checkout at commit `39a90a2706c60a5dd636c92af24943a1dd339694`, all 38 unit tests passed. The automated Chrome smoke test then used local Gemma 3 1B, the Docker agent image and Alethech to generate a fictional proposal, reload the review screen, reject it and verify the signed evidence. The decision was automated, the effect was simulated, and this run does not establish a human review or production security.
+
 ## Additional evidence check (2026-10-30)
 
 On Linux with Python 3.12 and Alethech 0.9.5, the core demo recorded its simulated allow, deny and approval-required decisions and verified the resulting store. A separate local test advanced a test clock beyond expiry, discarded the fictional pending request, recorded a denial and verified the signed store. The latter used a simulated proposal and mocked model response; it did not test a real human decision, Gemma inference, Docker, or email delivery.
