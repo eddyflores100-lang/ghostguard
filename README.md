@@ -1,8 +1,16 @@
-# GhostGuard — an agent's guardian
+# GhostGuard — guarded local agent prototype
 
 A local-first prototype exploring how to put a guardian between an agent and its tools. Inspired by the Taiko phishing case: an agent can correctly identify a threat yet take an external action without the intended authority.
 
 **Prototype, not a security product.** Only calls routed through `Guard` are checked. It cannot stop an agent using direct network, shell, filesystem, or credentials outside this process. It is not a firewall or sandbox. The demo has no real external actions or remotely authenticated approval interface. Approval capabilities must never be exposed to an untrusted agent.
+
+## Project direction
+
+GhostGuard is preserved as an independent agent project. The contest is historical context, not an active delivery target. The former contest automation is paused.
+
+The next release should support bounded autonomous read-only tasks and propose writes for explicit review. It is not yet a deployed autonomous service. Current tools still use simulated effects.
+
+Before any remote deployment: add authenticated operator sessions and authorization, durable task/approval state, bounded execution and cancellation, secret separation, evidence failure handling, and tested recovery. Keep the current dashboard on loopback; do not expose it through a public tunnel. Production deployment is blocked until these controls and a real human approval flow are verified.
 
 ## Ghost in the Machine
 
@@ -43,7 +51,7 @@ Install Ollama and a suitable Gemma model according to their instructions, start
 
 Install [Alethech](https://github.com/eddyflores100-lang/alethech) and its dependencies in the Python environment, then run `python3 demo.py --alethech-store /private/path/ghostguard-store`. The adapter calls Alethech to sign a commit for each tool/decision label and action hash and verifies the store afterward. The Alethech local working store is not encrypted at rest; protect its keys and use Alethech's encrypted container for portable storage. Hashes can disclose low-entropy inputs by guessing. Signatures establish integrity and provenance, not truth or completeness. The adapter is tested with a test double and was also run with Alethech 0.9.5: three decision commits were created and the resulting store verified successfully. A separate test modified a stored decision commit and confirmed verification rejected the tampered store.
 
-## Remaining before submission
+## Agent development backlog
 
 - Validate an actual human decision in the local dashboard and extend the isolated gateway beyond the fictional, simulated tool. The loopback token is not a defense against malicious local processes.
 - Document dependency licenses and reproduce the combined Gemma and Alethech flow on other systems.
